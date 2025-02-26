@@ -19,7 +19,7 @@ type ITokenProvider interface {
 }
 type ITokenCacheProvider interface {
 	Get(ctx context.Context, key string) (string, error)
-	Set(ctx context.Context, key string, token string, expiresIn time.Duration) error
+	Set(ctx context.Context, key string, value interface{}, expiresIn time.Duration) error
 	Delete(ctx context.Context, key string) error
 }
 
