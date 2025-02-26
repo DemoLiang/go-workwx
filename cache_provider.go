@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	AccessTokenKey = "access_token"
+	AccessTokenKey = "workwx:access_token"
 )
 
 // RedisCacheProvider 是缓存提供者的结构体定义

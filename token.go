@@ -58,11 +58,11 @@ func (t *token) usingExternalProvider() bool {
 }
 
 func (c *WorkwxApp) GetAccessToken() (string, error) {
-	tk, err := c.getAccessToken()
+	tk, err := c.accessToken.getToken()
 	if err != nil {
 		return "", err
 	}
-	return tk.token, nil
+	return tk, nil
 }
 
 // getAccessToken 获取 access token
@@ -76,7 +76,7 @@ func (c *WorkwxApp) getAccessToken() (tokenInfo, error) {
 	}
 	// 从provider获取token
 	if c.accessToken.cacheProvider != nil {
-		err = c.accessToken.cacheProvider.Set(context.Background(), AccessTokenKey, get.AccessToken, time.Duration(get.ExpiresInSecs))
+		err = c.accessToken.cacheProvider.Set(context.Background(), AccessTokenKey, get.AccessToken, time.Duration(get.ExpiresInSecs)*time.Second)
 		if err != nil {
 			return tokenInfo{}, err
 		}
@@ -194,11 +194,8 @@ func (t *token) getToken() (string, error) {
 	}
 
 	if t.cacheProvider != nil {
-		tok, err := t.cacheProvider.Get(context.TODO(), AccessTokenKey)
-		if err != nil {
-			return "", err
-		}
-		if tok != "" {
+		tok, _ := t.cacheProvider.Get(context.TODO(), AccessTokenKey)
+		if tok == "" {
 			err := t.syncToken()
 			if err != nil {
 				return "", err
