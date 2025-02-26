@@ -57,6 +57,14 @@ func (t *token) usingExternalProvider() bool {
 	return t.externalProvider != nil
 }
 
+func (c *WorkwxApp) GetAccessToken() (string, error) {
+	tk, err := c.getAccessToken()
+	if err != nil {
+		return "", err
+	}
+	return tk.token, nil
+}
+
 // getAccessToken 获取 access token
 func (c *WorkwxApp) getAccessToken() (tokenInfo, error) {
 	get, err := c.execGetAccessToken(reqAccessToken{
