@@ -2,10 +2,6 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/urfave/cli/v2"
-
-	"github.com/xen0n/go-workwx/v2"
 )
 
 func cmdSendMessage(c *cli.Context) error {

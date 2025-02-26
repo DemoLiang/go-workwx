@@ -3,10 +3,6 @@ package commands
 import (
 	"fmt"
 	"strconv"
-
-	"github.com/xen0n/go-workwx/v2"
-
-	"github.com/urfave/cli/v2"
 )
 
 func cmdDeptList(c *cli.Context) error {

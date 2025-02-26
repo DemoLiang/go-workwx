@@ -219,3 +219,7 @@ func executeQyapiMediaUpload[T mediaUploader, U tryIntoErr](
 
 	return nil
 }
+
+func (c *WorkwxApp) WithCacheRedis(tokenCacheProvider ITokenCacheProvider) {
+	c.accessToken.cacheProvider = tokenCacheProvider
+}

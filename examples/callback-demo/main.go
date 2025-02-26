@@ -6,8 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-
-	"github.com/xen0n/go-workwx/v2"
 )
 
 type dummyRxMessageHandler struct{}

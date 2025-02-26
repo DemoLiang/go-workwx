@@ -17,6 +17,11 @@ type ITokenProvider interface {
 	// GetToken 取回一个 token。有可能被并发调用。
 	GetToken(context.Context) (string, error)
 }
+type ITokenCacheProvider interface {
+	Get(ctx context.Context, key string) (string, error)
+	Set(ctx context.Context, key string, token string, expiresIn time.Duration) error
+	Delete(ctx context.Context, key string) error
+}
 
 type tokenInfo struct {
 	token     string
@@ -28,6 +33,7 @@ type token struct {
 	tokenInfo
 	lastRefresh      time.Time
 	getTokenFunc     func() (tokenInfo, error)
+	cacheProvider    ITokenCacheProvider
 	externalProvider ITokenProvider
 }
 
@@ -59,6 +65,13 @@ func (c *WorkwxApp) getAccessToken() (tokenInfo, error) {
 	})
 	if err != nil {
 		return tokenInfo{}, err
+	}
+	// 从provider获取token
+	if c.accessToken.cacheProvider != nil {
+		err = c.accessToken.cacheProvider.Set(context.Background(), AccessTokenKey, get.AccessToken, time.Duration(get.ExpiresInSecs))
+		if err != nil {
+			return tokenInfo{}, err
+		}
 	}
 	return tokenInfo{token: get.AccessToken, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
 }
@@ -168,6 +181,21 @@ func (t *token) getToken() (string, error) {
 		tok, err := t.externalProvider.GetToken(context.TODO())
 		if err != nil {
 			return "", err
+		}
+		return tok, nil
+	}
+
+	if t.cacheProvider != nil {
+		tok, err := t.cacheProvider.Get(context.TODO(), AccessTokenKey)
+		if err != nil {
+			return "", err
+		}
+		if tok != "" {
+			err := t.syncToken()
+			if err != nil {
+				return "", err
+			}
+			return t.token, nil
 		}
 		return tok, nil
 	}
